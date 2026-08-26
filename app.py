@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import threading
 from pathlib import Path
 from typing import Any
@@ -38,6 +36,20 @@ st.markdown("""
 .stSpinner > div > div {
     color: black !important;
 }
+
+.vz-followup-card { margin-top: 1rem; padding: 0.85rem 1rem 0.65rem; border: 1px solid var(--vz-border); border-radius: 14px 14px 0 0; background: var(--vz-card); }
+.vz-followup-title { font-weight: 800; color: var(--vz-text); font-size: 1rem; }
+.vz-followup-subtitle { color: var(--vz-muted); font-size: .78rem; margin-top: .2rem; }
+.vz-voice-label { display:flex; align-items:center; gap:.7rem; padding:.55rem .65rem; border:1px solid var(--vz-border); border-radius:12px; background:var(--vz-card); min-height:58px; }
+.vz-voice-icon { width:38px; height:38px; display:flex; align-items:center; justify-content:center; border-radius:10px; background:var(--vz-soft); font-size:1.15rem; }
+.vz-voice-title { font-weight:800; color:var(--vz-text); font-size:.88rem; }
+.vz-voice-hint { color:var(--vz-muted); font-size:.72rem; margin-top:.08rem; }
+.vz-voice-status { margin-top:.4rem; padding:.72rem .85rem; border:1px solid var(--vz-border); border-radius:12px; background:var(--vz-soft); color:var(--vz-text); font-size:.8rem; min-height:42px; display:flex; align-items:center; gap:.5rem; }
+.vz-status-dot { width:8px; height:8px; border-radius:50%; background:var(--vz-primary); display:inline-block; flex:0 0 auto; }
+.vz-transcript-heading { font-size:.76rem; font-weight:800; color:var(--vz-text); margin:.7rem 0 .3rem; }
+.vz-or-divider { display:flex; align-items:center; gap:.55rem; margin:.8rem 0 .55rem; color:var(--vz-muted); font-size:.65rem; font-weight:800; letter-spacing:.06em; }
+.vz-or-divider::before, .vz-or-divider::after { content:""; height:1px; background:var(--vz-border); flex:1; }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -295,14 +307,19 @@ st.markdown(
 camera_col_l, camera_col, camera_col_r = st.columns([1, 1, 1])
 with camera_col:
     st.markdown("<div class='vz-camera-bar'>", unsafe_allow_html=True)
-    camera_on = st.toggle(
-        "📷 Camera",
-        value=st.session_state.camera_on,
-        key="camera_toggle",
-        help="Turn the live camera and object detection on or off.",
-    )
+    camera_label = "Stop Camera" if st.session_state.camera_on else "Start Camera"
+    if st.button(
+        camera_label,
+        type="primary" if not st.session_state.camera_on else "secondary",
+        use_container_width=True,
+        key="camera_toggle_button",
+        help="Start or stop the live camera and object detection.",
+    ):
+        st.session_state.camera_on = not st.session_state.camera_on
+        st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
-st.session_state.camera_on = camera_on
+
+camera_on = st.session_state.camera_on
 
 if not camera_on:
     st.markdown(
