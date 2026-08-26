@@ -1,219 +1,196 @@
 # VizoLearn
 
-**Point. Learn. Ask.**
+**See it. Select it. Learn about it. Ask more.**
 
-VizoLearn is an interactive AI learning application that turns a live camera feed into a hands-on learning experience. Point the camera at an everyday object, let the system detect it, click the object you want to explore, and VizoLearn builds a lesson around it. You can then ask follow-up questions by typing or speaking while watching your words appear live as you talk.
+VizoLearn is an interactive AI learning project built with Streamlit. The idea is simple: point your camera at something, let the app recognize it, select the object you want to learn about, and let the AI explain it to you.
 
-The project is built with **Streamlit** and combines computer vision, image understanding, a local language model, browser speech recognition, and browser text-to-speech into one continuous learning workflow.
+What makes the project a little different from a normal object detector is that you do not have to stop at the detection. After selecting an object, you can ask questions about it by typing or speaking. When you speak, the transcript appears while you are talking, so the interaction feels more like a conversation than a traditional speech-to-text form.
+
+The project combines computer vision, image understanding, a local language model, speech recognition, and text-to-speech in one Streamlit application.
 
 ---
 
-## ✨ What VizoLearn Does
+## What VizoLearn does
 
-VizoLearn is designed around a simple interaction loop:
+The main workflow looks like this:
 
 ```text
-Live Camera
-    ↓
-YOLO Object Detection + Tracking
-    ↓
-Click / Tap an Object
-    ↓
-Crop the Selected Object
-    ↓
-BLIP Visual Description
-    ↓
-Qwen AI Tutor Explanation
-    ↓
-Read the Lesson Aloud
-    ↓
-Ask a Follow-up Question
-   ↙                ↘
-Voice              Typing
-   ↓                  ↓
-Live Transcript   Text Question
-   └──────────┬───────┘
-              ↓
-       Qwen Follow-up Answer
+Camera
+  ↓
+YOLO detects objects
+  ↓
+Choose an object
+  ↓
+VizoLearn crops the object
+  ↓
+BLIP describes what is visible
+  ↓
+Qwen explains it like a tutor
+  ↓
+Listen to the explanation
+  ↓
+Ask a follow-up question
+      ↙        ↘
+   Speak       Type
+     ↓           ↓
+Live transcript  Text input
+      └─────┬─────┘
+            ↓
+       Qwen answers
 ```
 
-### Core capabilities
+### Current features
 
-- **Live camera object detection** using YOLO11.
-- **Persistent object tracking** using ByteTrack so detected objects can be associated with the live scene.
-- **Clickable object selection** directly from the camera preview.
-- **Object selection buttons** below the preview as an alternative to clicking the bounding box.
-- **Visual context generation** using Salesforce BLIP.
-- **AI teaching and explanations** using `Qwen/Qwen2.5-0.5B-Instruct`.
-- **Conversational follow-up questions** that maintain recent chat context.
-- **Interactive voice input** using browser speech recognition.
-- **Live/interim transcript display** while the user is speaking.
-- **Typed question fallback** when voice is unavailable or not preferred.
-- **Browser-native text-to-speech** with voice selection, replay, pause/resume, and stop controls.
-- **CPU and CUDA support** where supported by the installed PyTorch build.
-- **Local model loading and caching** so AI models are reused after their first load during the application session.
-
----
-
-## 🎯 Project Goal
-
-Traditional object-learning applications usually separate **seeing**, **searching**, and **asking** into different steps. VizoLearn brings these interactions together.
-
-The goal is to create a more natural learning flow:
-
-> **See something → select it → understand it → ask about it → keep learning.**
-
-This makes the application suitable for demonstrations, exploratory learning, AI/computer-vision coursework, interactive education prototypes, and hands-on experimentation with multimodal AI.
+- Live camera feed through Streamlit WebRTC
+- Real-time object detection with YOLO11n
+- ByteTrack-based tracking for detected objects
+- Clickable objects in the camera view
+- Object-selection buttons below the camera preview
+- Automatic cropping of the selected object
+- BLIP image understanding for visual context
+- Qwen2.5-0.5B-Instruct for explanations and follow-up answers
+- Quick learning prompts such as **How does it work?** and **Fun fact**
+- Voice questions using the browser speech-recognition API
+- Live/interim transcript while speaking
+- Typing as a fallback when voice is unavailable
+- Browser text-to-speech for reading answers aloud
+- Voice selection and replay/pause/stop controls
+- Recent conversation context for follow-up questions
+- CPU fallback and CUDA support when the installed PyTorch build supports it
 
 ---
 
-## 🧠 AI / ML Components
+## Why I built it
 
-| Component | Technology | Purpose |
+The project started from a simple idea: learning should not always require opening a textbook or searching for an answer somewhere else.
+
+If you can see an object, you should be able to point at it and start learning about it.
+
+So the goal of VizoLearn is to connect these steps into one flow:
+
+> **See something → select it → learn about it → ask a question → keep learning.**
+
+It is mainly an AI/computer-vision project and a working prototype rather than a production education platform. It is useful for demonstrating how different AI capabilities can work together in a single application.
+
+---
+
+## Technologies used
+
+| Part | Technology | What it does |
 |---|---|---|
-| Object detection | **YOLO11n** via Ultralytics | Detects objects in the live camera feed |
-| Object tracking | **ByteTrack** | Keeps detections trackable across frames |
-| Image understanding | **Salesforce BLIP** | Produces visual context for the selected object |
-| Language model | **Qwen2.5-0.5B-Instruct** | Generates explanations and answers follow-up questions |
-| Speech recognition | **Browser SpeechRecognition / webkitSpeechRecognition** | Converts spoken follow-up questions into text |
-| Text-to-speech | **Browser SpeechSynthesis** | Reads AI answers aloud |
-| UI / orchestration | **Streamlit + Streamlit WebRTC** | Runs the application and live camera interaction |
+| UI | Streamlit | Builds the application interface |
+| Camera | streamlit-webrtc | Streams live camera frames |
+| Detection | YOLO11n / Ultralytics | Finds objects in the camera feed |
+| Tracking | ByteTrack | Keeps object detections trackable across frames |
+| Image understanding | Salesforce BLIP | Describes the selected image crop |
+| Tutor model | Qwen2.5-0.5B-Instruct | Generates explanations and answers questions |
+| Voice input | Browser SpeechRecognition | Turns spoken questions into text |
+| Voice output | Browser SpeechSynthesis | Reads AI responses aloud |
+| Image processing | OpenCV, Pillow, NumPy | Handles frames and image crops |
+| Model runtime | PyTorch, Transformers | Runs the AI models |
 
-### Models used by the application
+### Models
 
-The project includes the YOLO11n weights in the repository as:
+The repository contains the YOLO weights:
 
 ```text
 yolo11n.pt
 ```
 
-The image-captioning and language models are downloaded from Hugging Face when they are first loaded:
+The other models are loaded from Hugging Face when they are first needed:
 
 ```text
 Salesforce/blip-image-captioning-base
 Qwen/Qwen2.5-0.5B-Instruct
 ```
 
-Model loading is cached in the application, so the same process does not repeatedly reload the models for every question.
+The models are cached by the application so they do not need to be loaded from scratch for every interaction during the same run.
 
 ---
 
-## 🏗️ Architecture
-
-The application is intentionally split into small modules so that detection, selection, visual understanding, language generation, and voice interaction can be developed independently.
+## Project structure
 
 ```text
 VizoLearn/
 ├── app.py                         # Main Streamlit application
 ├── requirements.txt               # Python dependencies
-├── env.example                    # Optional environment configuration
+├── env.example                    # Example configuration values
 ├── pytest.ini                     # Pytest configuration
-├── yolo11n.pt                     # YOLO11n detector weights
+├── yolo11n.pt                     # YOLO11n weights
+│
 ├── .streamlit/
-│   └── config.toml                # Streamlit server configuration
+│   └── config.toml                # Streamlit configuration
+│
 ├── src/
 │   ├── __init__.py
-│   ├── detector.py                # YOLO detection + ByteTrack
-│   ├── crop.py                    # Crop selected detection
-│   ├── selection.py               # Bounding-box hit testing / selection
-│   ├── vision.py                  # BLIP image description
-│   ├── explain.py                 # Qwen tutor generation + Q&A
-│   ├── voice_ui.py                # Live voice UI + TTS controls
+│   ├── detector.py                # Detection and tracking
+│   ├── crop.py                    # Selected-object cropping
+│   ├── selection.py               # Click / bounding-box selection
+│   ├── vision.py                  # BLIP image understanding
+│   ├── explain.py                 # Qwen tutor and Q&A logic
+│   ├── voice_ui.py                # Live voice UI and browser TTS
 │   ├── listen.py                  # Optional faster-whisper path
-│   ├── speak.py                   # Optional pyttsx3 TTS path
-│   └── utils.py                   # Project utilities
+│   ├── speak.py                   # Optional pyttsx3 path
+│   └── utils.py                   # Utility functions
+│
 └── scripts/
-    └── download_whisper_model.py  # Optional Whisper model helper
+    └── download_whisper_model.py  # Optional Whisper helper
 ```
-
-### Main execution flow
-
-1. `app.py` starts the Streamlit interface.
-2. `streamlit-webrtc` opens the live camera stream.
-3. `ObjectDetector` runs YOLO11 detection and ByteTrack tracking on incoming frames.
-4. The camera preview displays bounding boxes around detected objects.
-5. `streamlit-image-coordinates` captures where the user clicks on the preview.
-6. `selection.py` determines which bounding box contains the click.
-7. `crop.py` extracts a clean image crop from the selected object.
-8. `vision.py` uses BLIP to create a visual description.
-9. `explain.py` sends the detected class and visual context to Qwen.
-10. The generated explanation is shown in the tutor workspace.
-11. `voice_ui.py` provides speaker controls plus the voice/typing follow-up interface.
-12. Spoken questions are transcribed in the browser and automatically submitted when the user finishes speaking.
-13. Qwen answers the new question using the selected object, visual context, and recent conversation history.
 
 ---
 
-## 🖥️ User Experience
+## How the application works
 
 ### 1. Start the camera
 
-Launch the application and press **Start Camera**.
+Open the Streamlit app and press **Start Camera**. After the browser gives camera permission, frames begin flowing through the detection pipeline.
 
-Once camera permission is granted, the live detector begins processing frames.
+### 2. Detect and track objects
 
-### 2. Select an object
+YOLO11n looks for objects in each frame. ByteTrack is used so detections can keep track IDs as objects move from frame to frame.
 
-There are two ways to select an object:
+### 3. Select an object
 
-- Click directly inside its detected bounding box in the camera preview.
-- Click the corresponding detected-object button shown below the preview.
+There are two ways to choose what you want to learn about:
 
-The selected object is shown with its detection confidence and a clean crop prepared for AI analysis.
+- Click directly inside a detected bounding box.
+- Use the detected-object buttons shown below the camera preview.
 
-### 3. Learn about the object
+Once selected, the application keeps the object crop separate from the visual overlays used on the camera preview.
 
-Press **Analyze & Teach Me** to generate a lesson.
+### 4. Generate a lesson
 
-You can also use the quick-learning actions:
+When you choose **Analyze & Teach Me**, the selected crop is passed to BLIP first. BLIP provides visual context, which is then given to Qwen along with the detected object name.
 
-- **How does it work?**
-- **What is it for?**
-- **Fun fact**
-- **Teach me something surprising**
+Qwen uses that context to generate a short explanation instead of trying to answer from the object label alone.
 
-### 4. Listen to the explanation
+### 5. Ask follow-up questions
 
-Every answer provides browser-native speech controls. Depending on the browser and available voices, you can select a voice and use:
+After the first explanation, the tutor area lets you continue the conversation.
 
-- **Read aloud**
-- **Replay**
-- **Pause / Resume**
-- **Stop**
+You can type a question or use **Ask by voice**. During voice input, the browser shows the recognised words as you speak. Once recognition finishes, the final transcript is sent to the tutor.
 
-### 5. Ask by voice
+### 6. Listen to the answer
 
-The follow-up panel places **Ask by voice** before the typing option.
-
-While speaking, the current recognition result is shown as a live transcript. When speech recognition ends, the final transcript is submitted as the next question.
-
-### 6. Ask by typing
-
-The same follow-up panel includes a text input and **Ask →** button, providing a normal keyboard-based path when needed.
-
-### 7. Continue the conversation
-
-Each question and answer is added to the tutor workspace so the interaction behaves like a continuous lesson instead of isolated requests.
+The application uses the browser's built-in speech synthesis to read answers aloud. The UI also provides playback controls such as replay, pause/resume, and stop.
 
 ---
 
-## ⚙️ Requirements
+## Getting started
 
-Recommended environment:
+### Requirements
 
-- Python **3.11+**
-- A webcam for live object detection
-- A modern Chromium-based browser for the best speech-recognition experience
-- Internet access on first run to download Hugging Face models
-- Optional NVIDIA GPU with a compatible CUDA-enabled PyTorch installation for faster inference
+You will need:
 
-The application can run on CPU, but object detection and local transformer inference will generally be slower than on a suitable GPU.
+- Python 3.11 or newer
+- A webcam for the live camera feature
+- A modern browser (Chromium-based browsers are the main target for the current voice experience)
+- Internet access the first time the Hugging Face models are downloaded
+- A suitable NVIDIA GPU if you want faster inference through CUDA
 
----
+The project can run on CPU, but model loading and inference will usually be slower.
 
-## 🚀 Installation
-
-### 1. Clone the repository
+### 1. Clone the project
 
 ```bash
 git clone <your-repository-url>
@@ -242,39 +219,82 @@ python -m venv .venv
 python -m pip install --upgrade pip
 ```
 
-### 4. Install dependencies
+### 4. Install the dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 5. Run VizoLearn
+### 5. Start VizoLearn
 
 ```bash
 python -m streamlit run app.py
 ```
 
-Then open the local Streamlit URL shown in the terminal, normally:
+Open the Streamlit address shown in the terminal. In most setups it will be:
 
 ```text
 http://localhost:8501
 ```
 
-> **Note:** `streamlit-webrtc` needs browser camera permissions. When prompted, allow the site to use your camera.
+Allow camera and microphone access in the browser when prompted.
 
 ---
 
-## 🔐 Optional Configuration
+## Using the voice feature
 
-The repository contains an `env.example` file with application settings.
+Voice input is handled in the browser instead of recording an audio file and sending the recording to a Python transcription service.
 
-Copy it to `.env` when you want to maintain local configuration values:
+The normal flow is:
 
-```bash
-cp env.example .env
+1. Press the microphone / **Ask by voice** control.
+2. Start speaking.
+3. Watch the transcript update while you speak.
+4. Finish speaking.
+5. The final recognised question is sent to the tutor.
+
+This is also why the experience can vary from one browser to another. Speech-recognition support is not identical everywhere.
+
+### If voice input is unavailable
+
+You can still use the typing field in the follow-up section. The text-question path does not depend on browser speech recognition.
+
+---
+
+## Text-to-speech
+
+The current app uses the browser's `SpeechSynthesis` API for spoken answers.
+
+That means the response is read directly by the browser rather than generating a new audio file on the server for every answer.
+
+There is also a `src/speak.py` module containing a `pyttsx3` implementation. It is kept as an alternative path for experimentation, but it is not the main speech-output path used by the current Streamlit interface.
+
+---
+
+## Optional Whisper support
+
+The project also contains an alternative transcription path based on `faster-whisper`:
+
+```text
+src/listen.py
+scripts/download_whisper_model.py
 ```
 
-Current configuration examples include:
+This path is not currently used by the live voice interaction in `app.py`. The current UI uses browser speech recognition because it provides the live, word-by-word/interim transcript experience used by the project.
+
+You can inspect the helper script with:
+
+```bash
+python scripts/download_whisper_model.py --help
+```
+
+---
+
+## Configuration
+
+The project includes an `env.example` file with example settings such as detector confidence, image size, and model names.
+
+For example:
 
 ```text
 VIZOLEARN_CONF=0.40
@@ -288,141 +308,81 @@ VIZOLEARN_VISION_MODEL=Salesforce/blip-image-captioning-base
 VIZOLEARN_LLM_MODEL=Qwen/Qwen2.5-0.5B-Instruct
 ```
 
-### Important configuration note
-
-The current application code uses the bundled `yolo11n.pt` detector and defines the BLIP/Qwen model IDs directly in `src/vision.py` and `src/explain.py`. Therefore, the `env.example` values should be treated as configuration documentation for the project rather than a guarantee that every variable is dynamically read by the current implementation.
+One important detail: the current application still defines some model settings directly in the Python source files. So `env.example` should be treated as a guide for configuration, not as proof that every variable is automatically read at runtime.
 
 ---
 
-## 🎙️ Voice Input Details
+## Testing
 
-The current live voice experience uses the browser's native speech-recognition API rather than sending recorded audio to a Python transcription service.
+The project includes a `pytest.ini` configuration file.
 
-This gives the UI a more interactive experience:
-
-1. Press the microphone control.
-2. Speak naturally.
-3. Interim recognition text is displayed while speaking.
-4. The interface keeps the visible transcript updated without waiting for the whole sentence to finish.
-5. When recognition ends, the final transcript is submitted to the tutor.
-
-### Browser compatibility
-
-Speech recognition support differs by browser and operating system. Chromium-based browsers are the primary target for the current implementation.
-
-If browser speech recognition is unavailable, the typing input remains available.
-
-### Microphone permissions
-
-When speech recognition is started for the first time, the browser may request microphone access. Allow access for the VizoLearn page.
-
----
-
-## 🔊 Text-to-Speech Details
-
-VizoLearn uses browser-native `SpeechSynthesis` for answer playback.
-
-The implementation deliberately keeps this client-side so that audio playback starts directly in the browser instead of generating server-side WAV files for every response.
-
-A separate `src/speak.py` module contains a `pyttsx3`-based path for offline/no-JavaScript experiments, but that path is **not the active speech output path in the current Streamlit application**.
-
----
-
-## 🗣️ Optional Whisper Path
-
-The project also contains `src/listen.py` and `scripts/download_whisper_model.py` for a `faster-whisper` transcription path.
-
-These modules are kept as an optional/offline-friendly alternative, but the current application uses browser-native speech recognition for live voice follow-up questions.
-
-To inspect or prepare the optional Whisper model path:
-
-```bash
-python scripts/download_whisper_model.py --help
-```
-
-The exact model download command depends on the options supported by the script.
-
----
-
-## 🧪 Testing
-
-The project is configured for pytest with:
-
-```text
-pytest.ini
-```
-
-Run:
+Run the test suite with:
 
 ```bash
 pytest
 ```
 
-Lightweight utility modules such as detection selection and cropping are separated from the Streamlit UI, which makes them easier to test independently.
+The code is split so that pieces such as object selection and image cropping can be tested independently from the Streamlit UI.
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
-### Camera does not start
+### The camera does not start
 
-Check that:
+Make sure:
 
-- The browser has camera permission.
-- No other application is exclusively using the webcam.
-- You opened the actual Streamlit page rather than a blocked/embedded browser context.
-- `streamlit-webrtc` installed successfully.
+- the browser has permission to use the camera,
+- another application is not already locking the webcam,
+- `streamlit-webrtc` installed correctly, and
+- you are opening the actual Streamlit page.
 
-### No objects are detected
+### Nothing is detected
 
-Try moving the camera closer, improving lighting, or pointing it at a common object supported by the YOLO model.
+Try pointing the camera at a common object in better lighting and moving close enough for the object to be clearly visible.
 
-Detection confidence is currently initialized around `0.40` in the application.
+The detector confidence is currently around `0.40` by default.
 
-### The first AI explanation is slow
+### The first explanation takes a while
 
-The BLIP and Qwen models are loaded lazily. The first inference can therefore take noticeably longer while model files are downloaded and initialized. Later requests reuse cached models within the running process.
+That is normal on the first run. BLIP and Qwen have to be downloaded and loaded before they can generate an answer. Later requests can reuse the loaded models while the application is running.
 
-### GPU is not being used
+### CUDA is not being used
 
-Check that:
+Check your PyTorch installation:
 
 ```python
 import torch
 print(torch.cuda.is_available())
 ```
 
-returns `True` and that the installed PyTorch build matches your CUDA environment.
-
-The application automatically falls back to CPU when CUDA is unavailable.
+If it prints `False`, the application will use CPU inference instead.
 
 ### Voice input does not work
 
-Try a Chromium-based browser, allow microphone access, and make sure the page is served in a browser context where speech recognition is supported.
+Try a Chromium-based browser, allow microphone permission, and make sure the browser supports speech recognition.
 
-The typing field can always be used as a fallback.
+The text input is always available as a fallback.
 
-### Speech playback does not work
+### Text-to-speech does not work
 
-Verify that the browser supports `speechSynthesis` and that your system has an available speech voice. The application also exposes a voice selector when the browser provides multiple voices.
-
----
-
-## 🔒 Privacy / Data Flow Notes
-
-The current application is designed around local inference for object detection, image captioning, and language generation after model files are available locally.
-
-Browser camera frames are processed through the application's live WebRTC pipeline for object detection. The selected image crop is then passed to the local BLIP model for visual description, and the resulting context is supplied to the local Qwen model.
-
-Voice follow-up input currently uses the browser speech-recognition API. Browser speech-recognition implementations may use browser/vendor services depending on the browser and platform; VizoLearn itself does not currently route the live voice transcript through a server-side Whisper model in `app.py`.
-
-Do not use the application with sensitive environments or information unless you have reviewed the privacy behavior of your browser, operating system, model downloads, and deployment environment.
+Check that your browser supports `speechSynthesis` and that your operating system/browser has at least one available voice.
 
 ---
 
-## 📦 Dependency Overview
+## A note about privacy
 
-The main packages in `requirements.txt` are:
+VizoLearn is designed so that object detection, image understanding, and language generation can happen locally after the required model files are available.
+
+However, the voice feature is different. The current live voice input uses the browser's speech-recognition API. Depending on the browser and operating system, speech recognition may involve browser or vendor services outside the Python application itself.
+
+For that reason, you should avoid using the project with sensitive audio, images, or information unless you have reviewed the privacy behavior of your browser and deployment environment.
+
+---
+
+## Main dependencies
+
+The project uses packages including:
 
 ```text
 streamlit
@@ -441,109 +401,101 @@ faster-whisper
 huggingface_hub
 ```
 
-Their roles are broadly:
+In simple terms:
 
-- **Streamlit** — application UI and state management.
-- **streamlit-webrtc** — live camera streaming.
-- **streamlit-image-coordinates** — click coordinates on the preview.
-- **Ultralytics** — YOLO11 model inference and tracking.
-- **OpenCV / NumPy / Pillow** — image processing.
-- **PyTorch** — neural-network execution.
-- **Transformers / Accelerate / Safetensors** — BLIP and Qwen inference/model loading.
-- **PyAV (`av`)** — video-frame handling.
-- **faster-whisper** — optional alternative transcription path.
-- **huggingface_hub** — Hugging Face model access.
+- **Streamlit** handles the app interface.
+- **streamlit-webrtc** handles the live camera stream.
+- **Ultralytics** runs YOLO11 detection and tracking.
+- **OpenCV / Pillow / NumPy** handle image processing.
+- **PyTorch / Transformers** run BLIP and Qwen.
+- **faster-whisper** is available for the optional transcription path.
 
 ---
 
-## 📁 File-by-File Overview
+## A quick look at the main files
 
 ### `app.py`
 
-The main entry point. It creates the Streamlit page, manages session state, starts the live WebRTC stream, renders object-selection controls, generates lessons, and connects the tutor workspace to voice and typed follow-up questions.
+This is the entry point of the project. It connects the camera, detector, object selection, AI explanation, conversation state, and voice interface.
 
 ### `src/detector.py`
 
-Defines the `ObjectDetector` abstraction and detection data structure. YOLO11 is executed with ByteTrack persistence so detections can retain track IDs across frames.
+Contains the YOLO detection and ByteTrack tracking logic.
 
 ### `src/selection.py`
 
-Contains hit-testing and selection helpers for deciding which detected object corresponds to a user click.
+Handles the logic for figuring out which detected object the user clicked.
 
 ### `src/crop.py`
 
-Extracts a padded crop around a selected bounding box. The application prefers the clean camera frame so detector labels/boxes are not accidentally included in the visual model input.
+Creates a clean crop of the selected object before sending it to the vision model.
 
 ### `src/vision.py`
 
-Loads BLIP and generates a visual description of the selected image crop.
+Loads BLIP and generates a description of the selected crop.
 
 ### `src/explain.py`
 
-Loads Qwen and generates the initial lesson plus conversational follow-up answers. The system prompt also tells the model not to invent visual details that cannot be supported by the provided context.
+Loads Qwen and generates the initial lesson and follow-up answers.
 
 ### `src/voice_ui.py`
 
-Contains the interactive voice controls, live speech-recognition component, live transcript behavior, typed fallback, and browser-native speech playback.
+Contains the interactive voice input, live transcript behaviour, typed follow-up input, and browser speech controls.
 
 ### `src/listen.py`
 
-Provides an alternative `faster-whisper` transcription implementation that is currently not wired into the live Streamlit app.
+Contains the optional faster-whisper transcription implementation.
 
 ### `src/speak.py`
 
-Provides an alternative `pyttsx3` text-to-speech implementation that is currently not used by the live app.
-
-### `scripts/download_whisper_model.py`
-
-Helper for preparing a local faster-whisper model when using the optional offline transcription path.
+Contains the optional pyttsx3 speech-output implementation.
 
 ---
 
-## 🔮 Future Improvements
+## Current limitations
 
-Possible next steps for the project include:
+VizoLearn is a working prototype, so there are still a few practical limitations:
 
-- More accurate object tracking and selection across difficult camera motion.
-- Support for additional detection models and custom datasets.
-- Better grounding between the image crop and language-model answer.
-- Multi-language speech recognition and speech output.
-- Persistent lesson history and user profiles.
-- Saved learning sessions and exportable notes.
-- Confidence-aware explanations when the detector is uncertain.
-- Improved mobile support and responsive camera controls.
-- Optional fully offline speech recognition using faster-whisper.
-- More educational response modes such as quizzes, hints, and teach-back activities.
+- YOLO can miss objects or classify them incorrectly.
+- BLIP can misunderstand what is visible in a crop.
+- Qwen can generate an incorrect explanation even when the detected object is correct.
+- Browser speech recognition behaves differently across browsers and operating systems.
+- CPU-only machines can feel slow when loading or running the transformer models.
+- The project is not intended for medical, legal, safety-critical, or other high-stakes decisions.
+
+The goal is to make the interaction useful and enjoyable, not to pretend that every AI output is automatically correct.
 
 ---
 
-## ⚠️ Limitations
+## What could be added next
 
-VizoLearn is an educational prototype and should not be treated as an authoritative source for safety-critical, medical, legal, or technical decisions.
+There are several directions that would make the project more complete:
 
-Object recognition can be wrong, image descriptions can be incomplete, and language-model explanations can contain errors. The tutor prompt intentionally asks the model to avoid unsupported visual claims, but model output should still be reviewed when accuracy matters.
-
-Performance also depends heavily on available CPU/GPU resources, camera resolution, browser behavior, and the time required to load the local transformer models.
-
----
-
-## 📜 License
-
-No explicit license file is included in the current project archive. Add a `LICENSE` file before distributing the project publicly if you want to specify reuse, modification, or redistribution terms.
-
----
-
-## 👨‍💻 Project Status
-
-**Current status:** Functional interactive prototype.
-
-The current repository contains the live Streamlit camera workflow, interactive object selection, AI-generated teaching responses, browser voice input with live transcript feedback, typed follow-ups, and browser speech playback.
+- Better object selection when several objects overlap
+- Support for custom object classes and custom YOLO datasets
+- Stronger grounding between the selected image and the generated explanation
+- More languages for speech input and output
+- Saved learning sessions and lesson history
+- Quiz and teach-back modes
+- Better mobile/responsive camera support
+- A fully offline speech-recognition option using faster-whisper
+- Confidence-aware answers when the detector is unsure
 
 ---
 
-## 🙌 Acknowledgements
+## Project status
 
-VizoLearn builds on the work of the open-source and research communities behind:
+**Status: Functional prototype**
+
+The current version includes the main end-to-end workflow: live camera detection, interactive object selection, AI-generated teaching, follow-up conversation, live voice transcription, typed questions, and browser-based speech playback.
+
+It is best thought of as a project/demo that shows how multiple AI capabilities can be combined into one useful interaction.
+
+---
+
+## Credits
+
+This project builds on several excellent open-source and research projects, including:
 
 - Streamlit
 - Ultralytics YOLO
@@ -554,4 +506,10 @@ VizoLearn builds on the work of the open-source and research communities behind:
 - faster-whisper
 - WebRTC / streamlit-webrtc
 
-The project brings these technologies together as an educational interaction layer focused on learning from the world around you.
+The interesting part of VizoLearn is not trying to replace these tools. It is putting them together into one simple idea: **point at something, learn about it, and keep asking questions.**
+
+---
+
+## License
+
+There is currently no `LICENSE` file in the project repository. If you plan to publish or redistribute VizoLearn, add an appropriate license file so that the reuse terms are clear.
