@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+# STATUS: not currently used by app.py. The live app's speech-to-text is
+# browser-native (SpeechRecognition/webkitSpeechRecognition, in
+# src/voice_ui.py:_live_voice_component), which needs no server-side model,
+# no download step, and no GPU. This faster-whisper-based path (together
+# with scripts/download_whisper_model.py) is kept because it works and may
+# be useful for an offline or non-Chromium deployment, but importing it
+# does nothing unless you wire it into app.py yourself.
+
 import os
 import tempfile
 import threading

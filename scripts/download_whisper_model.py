@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+# STATUS: downloads a model for src/listen.py's offline faster-whisper path,
+# which app.py does not currently use — live voice input is the browser's
+# own SpeechRecognition API (src/voice_ui.py) and needs no downloaded model
+# at all. Only run this if you're re-enabling the offline STT path yourself.
+
 import argparse
 import os
 from pathlib import Path

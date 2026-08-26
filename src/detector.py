@@ -4,6 +4,7 @@ from dataclasses import dataclass, asdict
 from typing import Any
 import threading
 
+import torch
 
 
 @dataclass(frozen=True)
@@ -20,9 +21,10 @@ class Detection:
 
 class ObjectDetector:
     def __init__(self, model_name: str = "yolo11n.pt", confidence: float = 0.40) -> None:
-        # Lazy imports keep lightweight unit tests (crop/selection utilities)
-        # usable even when the heavy vision stack is not installed.
-        import torch
+        # Lazy import keeps lightweight unit tests (crop/selection utilities)
+        # usable even when ultralytics is not installed. torch itself is
+        # imported at module level (see top of file) since device_name
+        # below needs it outside of __init__'s local scope.
         from ultralytics import YOLO
 
         self.device = 0 if torch.cuda.is_available() else "cpu"

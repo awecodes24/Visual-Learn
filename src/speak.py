@@ -1,5 +1,11 @@
 from __future__ import annotations
 
+# STATUS: not currently used by app.py. The live app's text-to-speech is
+# browser-native (SpeechSynthesis, in src/voice_ui.py:browser_speech), which
+# needs no server-side model or extra dependency. This pyttsx3-based path is
+# kept because it works and may be useful for an offline/no-JS deployment,
+# but importing it does nothing unless you wire it into app.py yourself.
+
 from pathlib import Path
 from functools import lru_cache
 import tempfile
